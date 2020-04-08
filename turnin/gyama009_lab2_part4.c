@@ -20,44 +20,45 @@ int main(void) {
 	DDRD = 0xFF; PORTD = 0x00; // Configure port D's 8 pins as outputs
 	unsigned char holdchar = 0x00;
 	unsigned char tempweight = 0x00; // Holding the temp weight
+	unsigned char tempA = 0x00; // Holding A
+	unsigned char tempB = 0x00; // Holding B
+	unsigned char tempC = 0x00; // Holding C
 	while(1){
-		holdchar = PINA + PINB + PINC;
-		if(holdchar >= 0x80){
-			holdchar -= 128;
-			tempweight += 0x80;
+		tempA = PINA & 0xFF;
+		tempB = PINB & 0xFF;
+		tempC = PINC & 0xFF;
+		tempweight = 0x00;
+		if((tempA + tempB + tempC) == 0){
+			tempweight += 0x00;
 		}
-		if(holdchar >= 0x40){
-			holdchar -= 64;
-			tempweight += 0x40;
-		}
-		if(holdchar >= 0x20){
-			holdchar -=32;
-			tempweight += 0x20;
-		}
-		if(holdchar >= 0x10){
-			holdchar -= 16;
-			tempweight += 0x10;
-		}
-		if(holdchar >= 0x08){
-			holdchar -= 8;
-			tempweight += 0x08;
-		}
-		if(holdchar >= 0x04){
-			holdchar -= 4;
-			tempweight += 0x04;
-		}
-		if(holdchar >= 0x02){
-			holdchar -= 2;
-			tempweight += 0x02;
-		}
-		if(holdchar >= 0x01){
-			holdchar -= 1;
+		if(((tempA + tempB + tempC) & 0x01) == 0x01){
 			tempweight += 0x01;
 		}
-		if((PINA + PINB + PINC) > 140){
+		if(((tempA + tempB + tempC) & 0x02) == 0x02){
+                        tempweight += 0x02;
+                }
+		if(((tempA + tempB + tempC) & 0x04) == 0x04){
+                        tempweight += 0x04;
+                }
+		if(((tempA + tempB + tempC) & 0x08) == 0x08){
+                        tempweight += 0x08;
+                }
+		if(((tempA + tempB + tempC) & 0x10) == 0x10){
+                        tempweight += 0x10;
+                }
+		if(((tempA + tempB + tempC) & 0x20) == 0x20){
+                        tempweight += 0x20;
+                }
+		if(((tempA + tempB + tempC) & 0x40) == 0x40){
+                        tempweight += 0x40;
+                }
+		if(((tempA + tempB + tempC) & 0x80) == 0x80){
+                        tempweight += 0x80;
+                }
+		if((tempA + tempB + tempC) > 140){
 			PORTD += 0x01;
-		}
-		if(abs(PINA - PINC) > 80){
+		}	
+		if(abs(tempA - tempC) > 80){
 			PORTD += 0x02;
 		}
 		PORTD += (tempweight & 0xFC);
