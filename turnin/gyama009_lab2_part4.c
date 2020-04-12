@@ -18,50 +18,17 @@ int main(void) {
 	DDRB = 0x00; PORTB = 0xFF; // Configure port B's 8 pins as inputs
 	DDRC = 0x00; PORTC = 0xFF; // Configure port C's 8 pins as inputs
 	DDRD = 0xFF; PORTD = 0x00; // Configure port D's 8 pins as outputs
-	unsigned char holdchar = 0x00;
 	unsigned char tempweight = 0x00; // Holding the temp weight
-	unsigned char tempA = 0x00; // Holding A
-	unsigned char tempB = 0x00; // Holding B
-	unsigned char tempC = 0x00; // Holding C
 	while(1){
-		tempA = PINA & 0xFF;
-		tempB = PINB & 0xFF;
-		tempC = PINC & 0xFF;
-		tempweight = 0x00;
-		if((tempA + tempB + tempC) == 0){
-			tempweight += 0x00;
+		tempweight = PINA + PINB + PINC;
+		PORTD = tempweight;
+		if(PINA + PINB + PINC > 140){
+			tempweight = (tempweight & 0xFE) + 0x01;
 		}
-		if(((tempA + tempB + tempC) & 0x01) == 0x01){
-			tempweight += 0x01;
+		if(abs(PINA - PINC) > 80){
+			tempweight = (tempweight & 0xFD) + 0x02;
 		}
-		if(((tempA + tempB + tempC) & 0x02) == 0x02){
-                        tempweight += 0x02;
-                }
-		if(((tempA + tempB + tempC) & 0x04) == 0x04){
-                        tempweight += 0x04;
-                }
-		if(((tempA + tempB + tempC) & 0x08) == 0x08){
-                        tempweight += 0x08;
-                }
-		if(((tempA + tempB + tempC) & 0x10) == 0x10){
-                        tempweight += 0x10;
-                }
-		if(((tempA + tempB + tempC) & 0x20) == 0x20){
-                        tempweight += 0x20;
-                }
-		if(((tempA + tempB + tempC) & 0x40) == 0x40){
-                        tempweight += 0x40;
-                }
-		if(((tempA + tempB + tempC) & 0x80) == 0x80){
-                        tempweight += 0x80;
-                }
-		if((tempA + tempB + tempC) > 140){
-			PORTD += 0x01;
-		}	
-		if(abs(tempA - tempC) > 80){
-			PORTD += 0x02;
-		}
-		PORTD += (tempweight & 0xFC);
+		PORTD = tempweight;
 	}
 	return 0;
 }
